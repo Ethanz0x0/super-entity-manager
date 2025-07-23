@@ -1,4 +1,4 @@
-package dev.ethanz0x0.sem.util;
+package dev.ethanz0x0.sem.utils;
 
 import org.bukkit.ChatColor;
 
