@@ -1,0 +1,6 @@
+main: dev.ethanz0x0.sem.SuperEntityManager
+name: SuperEntityManager
+version: 1.0.0
+api-version: 1.13
+author: Ethanz0x0
+description: A simple plugin to manage entities in your world.
