@@ -44,13 +44,8 @@ public class Config {
         // entity_blacklist.yml
         entityBlacklistFile = new File(dataFolder, "entity_blacklist.yml");
         if (!entityBlacklistFile.exists()) {
-            try (InputStream in = Config.class.getResourceAsStream("/entity_blacklist.yml")) {
-                if (in == null) {
-                    plugin.getLogger().severe("Internal error: input stream is null while creating configuration, " +
-                            "please contact the plugin developer.");
-                    return false;
-                }
-                Files.copy(in, entityBlacklistFile.toPath());
+            try {
+                entityBlacklistFile.createNewFile();
             } catch (IOException e) {
                 plugin.getLogger().severe("Failed to create entity_blacklist.yml.");
                 return false;
