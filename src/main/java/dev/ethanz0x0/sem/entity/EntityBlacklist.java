@@ -67,7 +67,7 @@ public class EntityBlacklist {
         blacklist.remove(entity.name());
         Config.getEntityBlacklist().set("blacklist", blacklist);
         Config.saveEntityBlacklist();
-        blacklisted.add(entity);
+        blacklisted.remove(entity);
     }
 
     public static void toggleIgnoreSpawner() {

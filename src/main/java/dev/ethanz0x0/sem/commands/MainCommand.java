@@ -149,7 +149,7 @@ public class MainCommand extends Command  {
 
     private void blacklistAdd(CommandSender sender, EntityType entityType) {
         if (EntityBlacklist.getBlacklisted().contains(entityType)) {
-            Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.added-already" +
+            Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.added-already",
                     entityType.name());
             return;
         }
@@ -159,8 +159,8 @@ public class MainCommand extends Command  {
     }
 
     private void blacklistRemove(CommandSender sender, EntityType entityType) {
-        if (EntityBlacklist.getBlacklisted().contains(entityType)) {
-            Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.removed-already" +
+        if (!EntityBlacklist.getBlacklisted().contains(entityType)) {
+            Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.removed-already",
                     entityType.name());
             return;
         }
