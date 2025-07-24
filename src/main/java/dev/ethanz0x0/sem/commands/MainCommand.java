@@ -137,11 +137,14 @@ public class MainCommand extends Command  {
                             return true;
                         }
                         case "chunk": {
-                            Chunk chunk = getChunkFromArguments(sender, args, 2);
-                            if (chunk == null) {
-                                return true;
-                            }
-                            queryChunk(sender, chunk);
+                            Translation.sendMessage(sender, Level.WARNING, "command.heavy-task");
+                            CompletableFuture
+                                    .supplyAsync(() -> getChunkFromArguments(sender, args, 2))
+                                    .thenAccept(result -> {
+                                        if (result != null) {
+                                            queryChunk(sender, result);
+                                        }
+                                    });
                             return true;
                         }
                     }
@@ -198,7 +201,7 @@ public class MainCommand extends Command  {
             return null;
         }
         Chunk chunk = world.getChunkAt(x, y);
-        if (chunk == null) {
+        if (chunk == null || !chunk.isLoaded()) {
             Translation.sendMessage(sender, Level.WARNING, "command.unknown-chunk", chunkLoc);
         }
         return chunk;
@@ -271,8 +274,6 @@ public class MainCommand extends Command  {
     }
 
     private void queryMost(CommandSender sender) {
-        Translation.sendMessage(sender, Level.INFO, "command.query.querying");
-
         List<Chunk> most = EntityQuery.topChunksWithMostEntities();
         Translation.sendMessage(sender, Level.INFO, "command.query.most.title");
         for (Chunk chunk : most) {
@@ -283,43 +284,26 @@ public class MainCommand extends Command  {
     }
 
     private void queryType(CommandSender sender, EntityType entityType) {
-        Translation.sendMessage(sender, Level.INFO, "command.query.querying");
-        CompletableFuture
-                .supplyAsync(() -> EntityQuery.countByType(entityType))
-                .thenAccept(result -> {
-                    Bukkit.getScheduler().runTask(plugin, () ->
-                            Translation.sendMessage(sender, Level.INFO, "command.query.type-query",
-                                    entityType.name(), result));
-                });
+        Translation.sendMessage(sender, Level.INFO, "command.query.type-query",
+                entityType.name(), EntityQuery.countByType(entityType));
     }
 
     private void queryWorld(CommandSender sender, String worldName) {
-        Translation.sendMessage(sender, Level.INFO, "command.query.querying");
         World world = Bukkit.getWorld(worldName);
         if (world == null) {
             Translation.sendMessage(sender, Level.WARNING, "command.unknown-world", worldName);
             return;
         }
 
-        CompletableFuture
-                .supplyAsync(() -> EntityQuery.countByWorld(world))
-                .thenAccept(result -> {
-                    Bukkit.getScheduler().runTask(plugin, () ->
-                            Translation.sendMessage(sender, Level.INFO, "command.query.world-query",
-                                    world.getName(), result));
-                });
+        Translation.sendMessage(sender, Level.INFO, "command.query.world-query",
+                world.getName(), EntityQuery.countByWorld(world));
     }
 
     private void queryChunk(CommandSender sender, Chunk chunk) {
         Translation.sendMessage(sender, Level.INFO, "command.query.querying");
-        CompletableFuture
-                .supplyAsync(() -> EntityQuery.countByChunk(chunk))
-                .thenAccept(result -> {
-                    Bukkit.getScheduler().runTask(plugin, () ->
-                            Translation.sendMessage(sender, Level.INFO, "command.query.chunk-query",
-                                    chunk.getWorld().getName() + "," + chunk.getX() + ", " + chunk.getZ(),
-                                    result));
-                });
+        Translation.sendMessage(sender, Level.INFO, "command.query.chunk-query",
+                chunk.getWorld().getName() + "," + chunk.getX() + ", " + chunk.getZ(),
+                EntityQuery.countByChunk(chunk));
     }
 
 }
