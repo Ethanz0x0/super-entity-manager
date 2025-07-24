@@ -76,6 +76,34 @@ public class MainCommand extends Command  {
                 }
             }
         }
+
+        if (args.length > 2) {
+            switch (args[0].toLowerCase()) {
+                case "blacklist": {
+                    String entityTypeString = String.join("_",
+                            new ArrayList<>(Arrays.asList(args).subList(2, args.length))).toUpperCase();
+                    EntityType entityType;
+                    try {
+                        entityType = EntityType.valueOf(entityTypeString);
+                    } catch (IllegalArgumentException e) {
+                        Translation.sendMessage(sender, Level.WARNING, "command.unknown-entity-type", entityTypeString);
+                        return true;
+                    }
+                    switch (args[1].toLowerCase()) {
+                        case "add": {
+                            blacklistAdd(sender, entityType);
+                            return true;
+                        }
+                        case "remove": {
+                            blacklistRemove(sender, entityType);
+                            return true;
+                        }
+                    }
+                    blacklistHelp(sender);
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -116,7 +144,30 @@ public class MainCommand extends Command  {
     private void blacklistIgnoreSpawnEgg(CommandSender sender) {
         EntityBlacklist.toggleIgnoreSpawnEgg();
         Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.ignore-spawn-egg." +
-                (EntityBlacklist.isIgnoreSpawner() ? "on" : "off"));
+                (EntityBlacklist.isIgnoreSpawnEgg() ? "on" : "off"));
     }
+
+    private void blacklistAdd(CommandSender sender, EntityType entityType) {
+        if (EntityBlacklist.getBlacklisted().contains(entityType)) {
+            Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.added-already" +
+                    entityType.name());
+            return;
+        }
+        EntityBlacklist.add(entityType);
+        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.added" +
+                entityType.name());
+    }
+
+    private void blacklistRemove(CommandSender sender, EntityType entityType) {
+        if (EntityBlacklist.getBlacklisted().contains(entityType)) {
+            Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.removed-already" +
+                    entityType.name());
+            return;
+        }
+        EntityBlacklist.remove(entityType);
+        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.removed" +
+                entityType.name());
+    }
+
 
 }
