@@ -16,6 +16,13 @@
 
     <build>
         <finalName>SuperEntityManager</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+            </plugin>
+        </plugins>
     </build>
 
     <repositories>
@@ -31,6 +38,12 @@
             <artifactId>spigot-api</artifactId>
             <version>1.13-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.13.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
