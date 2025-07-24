@@ -61,6 +61,10 @@ public class MainCommand extends Command  {
                     queryHelp(sender);
                     return true;
                 }
+                case "help": {
+                    help(sender);
+                    return true;
+                }
             }
         }
 
@@ -142,7 +146,7 @@ public class MainCommand extends Command  {
                                     .supplyAsync(() -> getChunkFromArguments(sender, args, 2))
                                     .thenAccept(result -> {
                                         if (result != null) {
-                                            queryChunk(sender, result);
+                                            Bukkit.getScheduler().runTask(plugin, () -> queryChunk(sender, result));
                                         }
                                     });
                             return true;
@@ -151,6 +155,7 @@ public class MainCommand extends Command  {
                 }
             }
         }
+        info(sender);
         return false;
     }
 
@@ -210,6 +215,10 @@ public class MainCommand extends Command  {
     private void info(CommandSender sender) {
         Translation.sendMessage(sender, Level.INFO, "command.plugin-info",
                 plugin.getDescription().getVersion(), "Ethanz0x0");
+    }
+
+    private void help(CommandSender sender) {
+        Translation.sendMessage(sender, Level.INFO, "command.help");
     }
 
     private void reload(CommandSender sender) {
@@ -300,7 +309,6 @@ public class MainCommand extends Command  {
     }
 
     private void queryChunk(CommandSender sender, Chunk chunk) {
-        Translation.sendMessage(sender, Level.INFO, "command.query.querying");
         Translation.sendMessage(sender, Level.INFO, "command.query.chunk-query",
                 chunk.getWorld().getName() + "," + chunk.getX() + ", " + chunk.getZ(),
                 EntityQuery.countByChunk(chunk));

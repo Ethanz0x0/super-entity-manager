@@ -52,11 +52,11 @@ public class SuperEntityManager extends JavaPlugin {
         CommandUtil.registerCommand(this, MainCommand.INSTANCE);
         getServer().getPluginManager().registerEvents(new EntityBlacklistListener(), this);
 
-        getLogger().info("Plugin fully loaded! Enjoy!");
+        getLogger().info("Enjoy!");
     }
 
     @Override
     public void onDisable() {
-
+        getLogger().info("Thanks for using Super Entity Manager! Goodbye!");
     }
 }
