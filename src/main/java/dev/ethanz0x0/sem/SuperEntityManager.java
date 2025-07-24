@@ -1,6 +1,7 @@
 package dev.ethanz0x0.sem;
 
 import dev.ethanz0x0.sem.commands.MainCommand;
+import dev.ethanz0x0.sem.entity.EntityBlacklist;
 import dev.ethanz0x0.sem.translations.TranslationLibrary;
 import dev.ethanz0x0.sem.utils.CommandUtil;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,11 +34,13 @@ public class SuperEntityManager extends JavaPlugin {
             return;
         }
 
-        if (TranslationLibrary.loadTranslations()) {
+        if (!TranslationLibrary.loadTranslations()) {
             getLogger().severe("Error while loading translations, plugin will shutdown...");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        EntityBlacklist.load();
 
         if (CommandUtil.getCommandMap() == null) {
             getLogger().severe("Error while reflecting command map, plugin will shutdown...");

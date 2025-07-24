@@ -16,11 +16,16 @@ public class Config {
     private static File configFile;
     private static FileConfiguration config;
 
+    private static File entityBlacklistFile;
+    private static FileConfiguration entityBlacklist;
+
     public static boolean initConfig() {
         if (!dataFolder.exists()) {
             dataFolder.mkdir();
         }
 
+        // config.yml
+        configFile = new File(dataFolder, "config.yml");
         if (!configFile.exists()) {
             try (InputStream in = Config.class.getResourceAsStream("/config.yml")) {
                 if (in == null) {
@@ -34,13 +39,34 @@ public class Config {
                 return false;
             }
         }
-
         config = YamlConfiguration.loadConfiguration(configFile);
+
+        // entity_blacklist.yml
+        entityBlacklistFile = new File(dataFolder, "entity_blacklist.yml");
+        if (!entityBlacklistFile.exists()) {
+            try (InputStream in = Config.class.getResourceAsStream("/entity_blacklist.yml")) {
+                if (in == null) {
+                    plugin.getLogger().severe("Internal error: input stream is null while creating configuration, " +
+                            "please contact the plugin developer.");
+                    return false;
+                }
+                Files.copy(in, entityBlacklistFile.toPath());
+            } catch (IOException e) {
+                plugin.getLogger().severe("Failed to create entity_blacklist.yml.");
+                return false;
+            }
+        }
+        entityBlacklist = YamlConfiguration.loadConfiguration(entityBlacklistFile);
         return true;
     }
 
+
     public static FileConfiguration getConfig() {
         return config;
+    }
+
+    public static FileConfiguration getEntityBlacklist() {
+        return entityBlacklist;
     }
 
     public static void saveConfig() {
@@ -51,7 +77,19 @@ public class Config {
         }
     }
 
+    public static void saveEntityBlacklist() {
+        try {
+            entityBlacklist.save(entityBlacklistFile);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Failed to save entity_blacklist.yml.");
+        }
+    }
+
     public static void reloadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
+    }
+
+    public static void reloadEntityBlacklist() {
+        entityBlacklist = YamlConfiguration.loadConfiguration(entityBlacklistFile);
     }
 }

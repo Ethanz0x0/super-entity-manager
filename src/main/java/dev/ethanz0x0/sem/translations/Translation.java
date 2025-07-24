@@ -19,6 +19,7 @@ public class Translation {
         int index = 0;
         for (Object replacer : replacers) {
             translation = translation.replace("{" + index + "}", replacer.toString());
+            index ++;
         }
         return translation;
     }

@@ -2,12 +2,16 @@ package dev.ethanz0x0.sem.commands;
 
 import dev.ethanz0x0.sem.Config;
 import dev.ethanz0x0.sem.SuperEntityManager;
+import dev.ethanz0x0.sem.entity.EntityBlacklist;
 import dev.ethanz0x0.sem.translations.Translation;
 import dev.ethanz0x0.sem.translations.TranslationLibrary;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 public class MainCommand extends Command  {
@@ -23,13 +27,13 @@ public class MainCommand extends Command  {
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission("superentitymanager.command.reload")) {
-            Translation.sendMessage(sender, Level.WARNING, "command.no-permission", label);
+        if (args.length == 0) {
+            info(sender);
             return true;
         }
 
-        if (args.length == 0) {
-            info(sender);
+        if (!sender.hasPermission("superentitymanager.command.reload")) {
+            Translation.sendMessage(sender, Level.WARNING, "command.no-permission", label);
             return true;
         }
 
@@ -40,7 +44,34 @@ public class MainCommand extends Command  {
                     return true;
                 }
                 case "reload": {
-                    reloadPlugin(sender);
+                    reload(sender);
+                    return true;
+                }
+                case "blacklist": {
+                    blacklistHelp(sender);
+                    return true;
+                }
+            }
+        }
+
+        if (args.length == 2) {
+            switch (args[0].toLowerCase()) {
+                case "blacklist": {
+                    switch (args[1].toLowerCase()) {
+                        case "list": {
+                            blacklistList(sender);
+                            return true;
+                        }
+                        case "ignorespawner": {
+                            blacklistIgnoreSpawner(sender);
+                            return true;
+                        }
+                        case "ignorespawnegg": {
+                            blacklistIgnoreSpawnEgg(sender);
+                            return true;
+                        }
+                    }
+                    blacklistHelp(sender);
                     return true;
                 }
             }
@@ -53,11 +84,39 @@ public class MainCommand extends Command  {
                 plugin.getDescription().getVersion(), "Ethanz0x0");
     }
 
-    private void reloadPlugin(CommandSender sender) {
+    private void reload(CommandSender sender) {
+        Translation.sendMessage(sender, Level.INFO, "command.plugin-reloading");
         long start = System.currentTimeMillis();
         Config.reloadConfig();
         TranslationLibrary.loadTranslations();
-        Translation.sendMessage(sender, Level.INFO, "command.plugin-reload",
+        EntityBlacklist.load();
+        Translation.sendMessage(sender, Level.INFO, "command.plugin-reloaded",
                 (System.currentTimeMillis() - start));
     }
+
+    private void blacklistHelp(CommandSender sender) {
+        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.help");
+    }
+
+    private void blacklistList(CommandSender sender) {
+        List<String> blacklist = new ArrayList<>();
+        for (EntityType entityType : EntityBlacklist.getBlacklisted()) {
+            blacklist.add(entityType.name());
+        }
+        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.list",
+                String.join("&7, &f", blacklist));
+    }
+
+    private void blacklistIgnoreSpawner(CommandSender sender) {
+        EntityBlacklist.toggleIgnoreSpawner();
+        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.ignore-spawner." +
+                (EntityBlacklist.isIgnoreSpawner() ? "on" : "off"));
+    }
+
+    private void blacklistIgnoreSpawnEgg(CommandSender sender) {
+        EntityBlacklist.toggleIgnoreSpawnEgg();
+        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.ignore-spawn-egg." +
+                (EntityBlacklist.isIgnoreSpawner() ? "on" : "off"));
+    }
+
 }
