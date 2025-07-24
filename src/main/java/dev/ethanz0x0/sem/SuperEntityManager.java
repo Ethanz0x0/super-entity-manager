@@ -2,6 +2,7 @@ package dev.ethanz0x0.sem;
 
 import dev.ethanz0x0.sem.commands.MainCommand;
 import dev.ethanz0x0.sem.entity.EntityBlacklist;
+import dev.ethanz0x0.sem.listeners.EntityBlacklistListener;
 import dev.ethanz0x0.sem.translations.TranslationLibrary;
 import dev.ethanz0x0.sem.utils.CommandUtil;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -49,6 +50,7 @@ public class SuperEntityManager extends JavaPlugin {
         }
 
         CommandUtil.registerCommand(this, MainCommand.INSTANCE);
+        getServer().getPluginManager().registerEvents(new EntityBlacklistListener(), this);
 
         getLogger().info("Plugin fully loaded! Enjoy!");
     }
