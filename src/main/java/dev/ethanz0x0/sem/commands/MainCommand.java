@@ -17,6 +17,7 @@ import org.bukkit.entity.EntityType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public class MainCommand extends Command  {
@@ -101,8 +102,6 @@ public class MainCommand extends Command  {
                         queryWorld(sender, args[2]);
                         return true;
                     }
-                    queryHelp(sender);
-                    return true;
                 }
             }
         }
@@ -272,6 +271,8 @@ public class MainCommand extends Command  {
     }
 
     private void queryMost(CommandSender sender) {
+        Translation.sendMessage(sender, Level.INFO, "command.query.querying");
+
         List<Chunk> most = EntityQuery.topChunksWithMostEntities();
         Translation.sendMessage(sender, Level.INFO, "command.query.most.title");
         for (Chunk chunk : most) {
@@ -282,23 +283,43 @@ public class MainCommand extends Command  {
     }
 
     private void queryType(CommandSender sender, EntityType entityType) {
-        Translation.sendMessage(sender, Level.INFO, "command.query.type-query",
-                entityType.name(), EntityQuery.countByType(entityType));
+        Translation.sendMessage(sender, Level.INFO, "command.query.querying");
+        CompletableFuture
+                .supplyAsync(() -> EntityQuery.countByType(entityType))
+                .thenAccept(result -> {
+                    Bukkit.getScheduler().runTask(plugin, () ->
+                            Translation.sendMessage(sender, Level.INFO, "command.query.type-query",
+                                    entityType.name(), result));
+                });
     }
 
     private void queryWorld(CommandSender sender, String worldName) {
+        Translation.sendMessage(sender, Level.INFO, "command.query.querying");
         World world = Bukkit.getWorld(worldName);
         if (world == null) {
             Translation.sendMessage(sender, Level.WARNING, "command.unknown-world", worldName);
             return;
         }
-        Translation.sendMessage(sender, Level.INFO, "command.query.world-query",
-                world.getName(), EntityQuery.countByWorld(world));
+
+        CompletableFuture
+                .supplyAsync(() -> EntityQuery.countByWorld(world))
+                .thenAccept(result -> {
+                    Bukkit.getScheduler().runTask(plugin, () ->
+                            Translation.sendMessage(sender, Level.INFO, "command.query.world-query",
+                                    world.getName(), result));
+                });
     }
 
     private void queryChunk(CommandSender sender, Chunk chunk) {
-        Translation.sendMessage(sender, Level.INFO, "command.query.chunk-query",
-                chunk.getX() + ", " + chunk.getZ(), EntityQuery.countByChunk(chunk));
+        Translation.sendMessage(sender, Level.INFO, "command.query.querying");
+        CompletableFuture
+                .supplyAsync(() -> EntityQuery.countByChunk(chunk))
+                .thenAccept(result -> {
+                    Bukkit.getScheduler().runTask(plugin, () ->
+                            Translation.sendMessage(sender, Level.INFO, "command.query.chunk-query",
+                                    chunk.getWorld().getName() + "," + chunk.getX() + ", " + chunk.getZ(),
+                                    result));
+                });
     }
 
 }
