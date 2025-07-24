@@ -154,7 +154,7 @@ public class MainCommand extends Command  {
             return;
         }
         EntityBlacklist.add(entityType);
-        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.added" +
+        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.added",
                 entityType.name());
     }
 
@@ -165,7 +165,7 @@ public class MainCommand extends Command  {
             return;
         }
         EntityBlacklist.remove(entityType);
-        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.removed" +
+        Translation.sendMessage(sender, Level.INFO, "command.entity-blacklist.removed",
                 entityType.name());
     }
 
